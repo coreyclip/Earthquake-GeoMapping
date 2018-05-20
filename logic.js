@@ -1,7 +1,7 @@
-let mapBox = "https://api.mapbox.com/styles/v1/mapbox/high-contrast-v10/tiles/256/{z}/{x}/{y}?" +
-"access_token=pk.eyJ1IjoiY29yZXljbGlwIiwiYSI6ImNqaDFhaTBnejAxczMyd2xpamI0dXV0Y2MifQ.kEHm4wSEA0hhGmCBXvjPCw";
 
+// earthquake geojson
 let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
+//var queryUrl = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2014-01-01&endtime=" + "2014-01-02&maxlongitude=-69.52148437&minlongitude=-123.83789062&maxlatitude=48.74894534&minlatitude=25.16517337";
 
 // Perform a GET request to the query URL
 d3.json(queryUrl, function(data) {
@@ -17,12 +17,13 @@ function createFeatures(earthquakeData){
   // Give each feature a popup describing the place and time of the earthquake
   function onEachFeature(feature, layer) {
     layer.bindPopup("<h3>" + feature.properties.place +
-      "</h3><hr><p>" + new Date(feature.properties.time) + "</p>");
+      "</h3><hr><p>" + new Date(feature.properties.time) + "</p>" + 
+      "</h3><hr><p>" + "mag: " + feature.properties.mag + "</p>");
   };
 
   // Create a GeoJSON layer containing the features array on the earthquakeData object
   // Run the onEachFeature function once for each piece of data in the array
-  var earthquakes = L.geoJSON(earthquakeData, {
+  let earthquakes = L.geoJSON(earthquakeData, {
     onEachFeature: onEachFeature
   });
 
@@ -31,14 +32,54 @@ function createFeatures(earthquakeData){
 
 };
 
-// Create a map object
-let myMap = L.map("map", {
-  center: [37.09, -95.71],
-  zoom: 5
-});
+function createMap(earthquakes){
+    console.log('creating map...')
 
-// Add a tile layer
-L.tileLayer(mapBox).addTo(myMap);
+    let accessToken = "access_token=pk.eyJ1IjoiYnJ5YW5sb3dlIiwiYSI6ImNqZ3p2bThxNTA4M3Yyd25vdGQxY2xqeXQifQ.URpIhwM_YJcAJYOyzbZEdQ"
+
+    let streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?" + 
+            accessToken);
+    
+    let darkMap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/256/{z}/{x}/{y}?" + 
+            accessToken);
+    
+    let highContrastMap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/outdoors-v10/tiles/256/{z}/{x}/{y}?" + 
+            accessToken);
+    
+    let SatelliteMap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?" + 
+            accessToken);
+
+
+
+    let baseMaps = {
+        "Street Map": streetmap,
+        "Dark map": darkMap,
+        "Satellite map": SatelliteMap,
+        "High Contrast map": highContrastMap
+    };
+
+    console.log("baseMaps", baseMaps)
+    
+    let overlayMaps = {
+        Earthquakes: earthquakes
+    };
+    console.log('overlayMaps', overlayMaps)
+
+    // Create a map object
+    let myMap = L.map("map", {
+      center: [37.09, -95.71],
+      zoom: 5,
+      layers: [streetmap, earthquakes]
+    });
+
+    // Create a layer control
+  // Pass in our baseMaps and overlayMaps
+  // Add the layer control to the map
+    L.control.layers(baseMaps, overlayMaps).addTo(myMap);
+
+};
+
+
 
 
 
