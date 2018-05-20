@@ -1,4 +1,4 @@
-let mapBox = "https://api.mapbox.com/styles/v1/mapbox/outdoors-v10/tiles/256/{z}/{x}/{y}?" +
+let mapBox = "https://api.mapbox.com/styles/v1/mapbox/high-contrast-v10/tiles/256/{z}/{x}/{y}?" +
 "access_token=pk.eyJ1IjoiY29yZXljbGlwIiwiYSI6ImNqaDFhaTBnejAxczMyd2xpamI0dXV0Y2MifQ.kEHm4wSEA0hhGmCBXvjPCw";
 
 let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
