@@ -1,7 +1,16 @@
 
 // earthquake geojson
-let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
+let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_month.geojson"
 //var queryUrl = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2014-01-01&endtime=" + "2014-01-02&maxlongitude=-69.52148437&minlongitude=-123.83789062&maxlatitude=48.74894534&minlatitude=25.16517337";
+
+
+// API link to fetch our geojson data of earthquakes
+var APIlink_plates = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
+
+// define a function to scale the magnitdue
+function markerSize(magnitude) {
+    return magnitude * 3;
+};
 
 // Perform a GET request to the query URL
 d3.json(queryUrl, function(data) {
@@ -10,6 +19,11 @@ d3.json(queryUrl, function(data) {
    createFeatures(data.features);
   });
 
+  // function for color based on magnitude
+  function adjustColor(magnitude){
+    let GreenScaler = 300 - Math.round(magnitude * 40)
+    return `rgb(62, ${GreenScaler}, 88)`
+  }
 
 function createFeatures(earthquakeData){
     
@@ -18,19 +32,40 @@ function createFeatures(earthquakeData){
   function onEachFeature(feature, layer) {
     layer.bindPopup("<h3>" + feature.properties.place +
       "</h3><hr><p>" + new Date(feature.properties.time) + "</p>" + 
-      "</h3><hr><p>" + "mag: " + feature.properties.mag + "</p>");
-  };
+      "</h3><hr><p>" + "Magnitude: " + feature.properties.mag + "</p>");
+    
+        };
 
   // Create a GeoJSON layer containing the features array on the earthquakeData object
   // Run the onEachFeature function once for each piece of data in the array
   let earthquakes = L.geoJSON(earthquakeData, {
-    onEachFeature: onEachFeature
+    pointToLayer: function(geoJsonPoint, latlng){
+        return L.circleMarker(latlng, { radius: markerSize(geoJsonPoint.properties.mag) });
+    },
+
+    style: function (geoJsonFeature) {
+        return {
+            fillColor: adjustColor(geoJsonFeature.properties.mag),
+            fillOpacity: 0.7,
+            weight: 0.1,
+            color: 'black'
+
+        }
+    },
+
+    onEachFeature: onEachFeature,
+    
   });
 
   // Sending our earthquakes layer to the createMap function
-  createMap(earthquakes);
+createMap(earthquakes);
 
 };
+
+// create a layer group for faultlines
+
+
+
 
 function createMap(earthquakes){
     console.log('creating map...')
@@ -61,7 +96,8 @@ function createMap(earthquakes){
     console.log("baseMaps", baseMaps)
     
     let overlayMaps = {
-        Earthquakes: earthquakes
+        Earthquakes: earthquakes, 
+        
     };
     console.log('overlayMaps', overlayMaps)
 
