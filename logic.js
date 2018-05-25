@@ -25,8 +25,7 @@ d3.json(queryUrl, function(data) {
     return `rgb(62, ${GreenScaler}, 88)`
   }
 
-function createFeatures(earthquakeData){
-    
+function createFeatures(earthquakeData){  
   // Define a function we want to run once for each feature in the features array
   // Give each feature a popup describing the place and time of the earthquake
   function onEachFeature(feature, layer) {
@@ -57,10 +56,12 @@ function createFeatures(earthquakeData){
     
   });
 
-  // Sending our earthquakes layer to the createMap function
+// Sending our earthquakes layer to the createMap function
 createMap(earthquakes);
 
 };
+
+
 
 // create a layer group for faultlines
 
@@ -73,15 +74,15 @@ function createMap(earthquakes){
     let accessToken = "access_token=pk.eyJ1IjoiYnJ5YW5sb3dlIiwiYSI6ImNqZ3p2bThxNTA4M3Yyd25vdGQxY2xqeXQifQ.URpIhwM_YJcAJYOyzbZEdQ"
 
     let streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?" + 
-            accessToken);
+            accessToken),
     
-    let darkMap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/256/{z}/{x}/{y}?" + 
-            accessToken);
+     darkMap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/256/{z}/{x}/{y}?" + 
+            accessToken),
     
-    let highContrastMap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/outdoors-v10/tiles/256/{z}/{x}/{y}?" + 
-            accessToken);
+     highContrastMap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/outdoors-v10/tiles/256/{z}/{x}/{y}?" + 
+            accessToken),
     
-    let SatelliteMap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?" + 
+     SatelliteMap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?" + 
             accessToken);
 
 
@@ -113,7 +114,32 @@ function createMap(earthquakes){
   // Add the layer control to the map
     L.control.layers(baseMaps, overlayMaps).addTo(myMap);
 
+    
+    // create legend
+    let legend = L.control({position:"bottomleft"});
+
+    legend.onAdd = function(map) {
+
+        let div = L.DomUtil.create('div'),
+            // the magintude keys to be displayed on DOM   
+            keys = [0, 1, 2, 3, 4, 5, 6],
+            labels = [];
+
+        div.innerHTML += "<h5 style='margin:2px'>Magnitude</h5>"
+        
+        for (let i = 0; i < keys.length; i++){
+            div.innerHTML += '<i style="background:' + adjustColor(keys[i]) + '"></i>' + 
+            keys[i] + (keys[i + 1] ? '&ndash;' + keys[i + 1] + '<br>': '+');
+        }
+    
+        return div;
+
+    };
+    legend.addTo(myMap);
+
+
 };
+
 
 
 
