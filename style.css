@@ -14,3 +14,7 @@ html {
 h1 {
   text-align: center;
 }
+
+legend {
+  background-color: bisque;
+}

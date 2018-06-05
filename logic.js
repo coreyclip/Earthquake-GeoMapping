@@ -23,8 +23,20 @@ d3.json(queryUrl, function(data) {
 d3.json(APIlink_plates, function(data) {
     // Once we get a response, send the data.features object to the createEarthquakes function
    console.log(data);
-   // createEarthquakes(data.features);
+//    createPlates(data);
   });
+
+// function createPlates(PlateData){
+//     function onEachPlate(feature, layer){
+//         layer.bindPopup("<h3> Plate A: " + feature.properties.PlateA + "Plate B: " + feature.properties.PlateB +  "</h3>");
+//           };
+//     let plate = L.geoJSON(PlateData.geometry.coordinates,{
+//         pointToLayer: function(geoJsonPoint, latlng){
+//             return L.
+//         }
+//         })
+//     };
+
 
   // function for color based on magnitude
   function adjustColor(magnitude){
@@ -35,7 +47,7 @@ d3.json(APIlink_plates, function(data) {
 function createEarthquakes(earthquakeData){  
   // Define a function we want to run once for each feature in the features array
   // Give each feature a popup describing the place and time of the earthquake
-  function onEachFeature(feature, layer) {
+  function onEachQuake(feature, layer) {
     layer.bindPopup("<h3>" + feature.properties.place +
       "</h3><hr><p>" + new Date(feature.properties.time) + "</p>" + 
       "</h3><hr><p>" + "Magnitude: " + feature.properties.mag + "</p>");
@@ -43,7 +55,7 @@ function createEarthquakes(earthquakeData){
         };
 
   // Create a GeoJSON layer containing the features array on the earthquakeData object
-  // Run the onEachFeature function once for each piece of data in the array
+  // Run the onEachQuake function once for each piece of data in the array
   let earthquakes = L.geoJSON(earthquakeData, {
     pointToLayer: function(geoJsonPoint, latlng){
         return L.circleMarker(latlng, { radius: markerSize(geoJsonPoint.properties.mag) });
@@ -59,7 +71,7 @@ function createEarthquakes(earthquakeData){
         }
     },
 
-    onEachFeature: onEachFeature,
+    onEachQuake: onEachQuake,
     
   });
 
@@ -132,10 +144,10 @@ function createMap(earthquakes){
             keys = [0, 1, 2, 3, 4, 5, 6],
             labels = [];
 
-        div.innerHTML += "<h5 style='margin:2px'>Magnitude</h5>"
+        div.innerHTML += "<h5 style='margin:2px background-color: bisque;'>Magnitude</h5>"
         
         for (let i = 0; i < keys.length; i++){
-            div.innerHTML += '<i style="background:' + adjustColor(keys[i]) + '"></i>' + 
+            div.innerHTML += '<i style="width:10px; height:10px; margin-right:5px; background-color:'+ adjustColor(keys[i]) + '">___</i>' + 
             keys[i] + (keys[i + 1] ? '&ndash;' + keys[i + 1] + '<br>': '+');
         }
     
