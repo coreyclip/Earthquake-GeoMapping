@@ -14,9 +14,16 @@ function markerSize(magnitude) {
 
 // Perform a GET request to the query URL
 d3.json(queryUrl, function(data) {
-    // Once we get a response, send the data.features object to the createFeatures function
+    // Once we get a response, send the data.features object to the createEarthquakes function
    console.log(data);
-   createFeatures(data.features);
+   createEarthquakes(data.features);
+  });
+
+// Perform a GET request to the plates URL
+d3.json(APIlink_plates, function(data) {
+    // Once we get a response, send the data.features object to the createEarthquakes function
+   console.log(data);
+   // createEarthquakes(data.features);
   });
 
   // function for color based on magnitude
@@ -25,7 +32,7 @@ d3.json(queryUrl, function(data) {
     return `rgb(62, ${GreenScaler}, 88)`
   }
 
-function createFeatures(earthquakeData){  
+function createEarthquakes(earthquakeData){  
   // Define a function we want to run once for each feature in the features array
   // Give each feature a popup describing the place and time of the earthquake
   function onEachFeature(feature, layer) {
