@@ -23,19 +23,10 @@ d3.json(queryUrl, function(data) {
 d3.json(APIlink_plates, function(data) {
     // Once we get a response, send the data.features object to the createEarthquakes function
    console.log(data);
-//    createPlates(data);
+   createPlates(data);
   });
 
-// function createPlates(PlateData){
-//     function onEachPlate(feature, layer){
-//         layer.bindPopup("<h3> Plate A: " + feature.properties.PlateA + "Plate B: " + feature.properties.PlateB +  "</h3>");
-//           };
-//     let plate = L.geoJSON(PlateData.geometry.coordinates,{
-//         pointToLayer: function(geoJsonPoint, latlng){
-//             return L.
-//         }
-//         })
-//     };
+
 
 
   // function for color based on magnitude
@@ -44,7 +35,9 @@ d3.json(APIlink_plates, function(data) {
     return `rgb(62, ${GreenScaler}, 88)`
   }
 
-function createEarthquakes(earthquakeData){  
+
+
+  function createEarthquakes(earthquakeData){  
   // Define a function we want to run once for each feature in the features array
   // Give each feature a popup describing the place and time of the earthquake
   function onEachQuake(feature, layer) {
@@ -84,6 +77,20 @@ createMap(earthquakes);
 
 // create a layer group for faultlines
 
+let tectonicplates = new L.LayerGroup();
+
+function createPlates(PlateData){
+    function onEachPlate(feature, layer){
+        layer.bindPopup("<h3> Plate A: " + feature.properties.PlateA + "Plate B: " + feature.properties.PlateB +  "</h3>");
+          };
+    L.geoJSON(PlateData,{
+        color: "#F26157",
+        weight: 1.5
+        }).addTo(tectonicplates);
+
+        // add layer to map
+        tectonicplates.addTo(map)
+    };
 
 
 
@@ -116,7 +123,8 @@ function createMap(earthquakes){
     console.log("baseMaps", baseMaps)
     
     let overlayMaps = {
-        Earthquakes: earthquakes, 
+        Earthquakes: earthquakes,
+        "Tectonic Plates": tectonicplates 
         
     };
     console.log('overlayMaps', overlayMaps)
