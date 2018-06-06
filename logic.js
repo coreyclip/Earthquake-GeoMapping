@@ -17,6 +17,37 @@ d3.json(queryUrl, function(data) {
     // Once we get a response, send the data.features object to the createEarthquakes function
    console.log(data);
    createEarthquakes(data.features);
+   // Here we create a timeline control object on our map.
+   var timelineControl = L.timelineSliderControl({
+    formatOutput: function(date) {
+      return new Date(date).toString();
+    },
+    // Setting the number of 'ticks' or frames that will be displayed on our map.
+    steps: 2000
+  });
+
+  // We also create the timeline layer.
+  var timeline = L.timeline(data, {
+    getInterval: getInterval,
+    pointToLayer: function(layerData, latlng) {
+      return L.circleMarker(latlng, {
+        radius: layerData.properties.mag * 6,
+        color: getColor(layerData.properties.mag),
+        opacity: 0.75,
+        fillOpacity: 0.75,
+        weight: 0
+      }).bindPopup(
+        "Magnitude: " +
+        layerData.properties.mag +
+        "<br>Location: " +
+        layerData.properties.place
+      );
+    }
+  });
+  timelineControl.addTo(map);
+  timelineControl.addTimelines(timeline);
+  timeline.addTo(timelineLayer);
+  timelineLayer.addTo(map);
   });
 
 // Perform a GET request to the plates URL
@@ -32,7 +63,7 @@ d3.json(APIlink_plates, function(data) {
   // function for color based on magnitude
   function adjustColor(magnitude){
     let GreenScaler = 300 - Math.round(magnitude * 40)
-    return `rgb(62, ${GreenScaler}, 88)`
+    return `rgb(66, ${GreenScaler}, 88)`
   }
 
 
@@ -65,6 +96,9 @@ d3.json(APIlink_plates, function(data) {
     },
 
     onEachQuake: onEachQuake,
+    
+
+
     
   });
 
@@ -120,14 +154,14 @@ function createMap(earthquakes){
         "High Contrast map": highContrastMap
     };
 
-    console.log("baseMaps", baseMaps)
+    //console.log("baseMaps", baseMaps)
     
     let overlayMaps = {
         Earthquakes: earthquakes,
         "Tectonic Plates": tectonicplates 
         
     };
-    console.log('overlayMaps', overlayMaps)
+    //console.log('overlayMaps', overlayMaps)
 
     // Create a map object
     let myMap = L.map("map", {
